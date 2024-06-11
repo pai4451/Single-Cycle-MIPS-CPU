@@ -32,8 +32,8 @@ reg [31:0] reg_mem [0:31];        // Memory array to hold register values
 assign ReadData1 = reg_mem[ReadReg1];  // Read data from the first register
 assign ReadData2 = reg_mem[ReadReg2];  // Read data from the second register
 
-// Always block triggered on the rising edge of the clock or falling edge of the reset
-always @(posedge clock or negedge reset) 
+// Always block triggered on the rising edge of the clock
+always @(posedge clock) 
 begin
     if (!reset)
     begin

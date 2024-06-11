@@ -21,17 +21,25 @@ module ALU (
 // Assign Zero to 1 if ALUOut is 0, otherwise 0
 assign Zero = (ALUOut == 0);
 
+// Define ALU control signal values for better readability
+parameter AND = 4'b0000;
+parameter OR  = 4'b0001;
+parameter ADD = 4'b0010;
+parameter SUB = 4'b0110;
+parameter SLT = 4'b0111;
+parameter NOR = 4'b1100;
+
 // Always block to compute ALU operation based on ALUCtl
-always @(*)
-begin
+always @(*) begin
+    ALUOut = 32'b0; // Initialize ALUOut to avoid latch inference
     case (ALUCtl)
-        0: ALUOut = A & B;        // AND operation
-        1: ALUOut = A | B;        // OR operation
-        2: ALUOut = A + B;        // Addition
-        6: ALUOut = A - B;        // Subtraction
-        7: ALUOut = (A < B) ? 1 : 0;  // Set on less than
-        12: ALUOut = ~(A | B);    // NOR operation
-        default: ALUOut = 0;      // Default case
+        AND: ALUOut = A & B;        // AND operation
+        OR:  ALUOut = A | B;        // OR operation
+        ADD: ALUOut = A + B;        // Addition
+        SUB: ALUOut = A - B;        // Subtraction
+        SLT: ALUOut = (A < B) ? 1 : 0;  // Set on less than
+        NOR: ALUOut = ~(A | B);     // NOR operation
+        default: ALUOut = 32'b0;    // Default case
     endcase
 end
 

@@ -12,153 +12,153 @@ module MipsCPU(
 );
 
 // Internal wires for connecting the modules
-wire [31:0] PCin_S, PCout_S;
-wire [31:0] PCoutinc_S;
-wire [31:0] inst_S;
-wire RegDst_S, RegWrite_S, ALUSrc_S, MemtoReg_S, MemRead_S, MemWrite_S, Branch_S;
-wire [1:0] ALUOp_S;
-wire [4:0] WriteReg_S;
-wire [31:0] ReadData1_S, ReadData2_S;
-wire [31:0] WriteData_Reg_S;  // Data to be written to the register file
-wire [31:0] Extend32_S;
-wire [31:0] ALU_B_S;
-wire [31:0] ShiftOut_S;
-wire [3:0] ALUCtl_S;
-wire Zero_S;
-wire [31:0] ALUOut_S;
-wire [31:0] Add_ALUOut_S;
-wire AndGateOut_S;
-wire [31:0] ReadData_S;
+wire [31:0] pc_next, pc_current;
+wire [31:0] pc_incremented;
+wire [31:0] instruction;
+wire reg_dst, reg_write, alu_src, mem_to_reg, mem_read, mem_write, branch;
+wire [1:0] alu_op;
+wire [4:0] write_reg;
+wire [31:0] reg_read_data1, reg_read_data2;
+wire [31:0] reg_write_data;
+wire [31:0] sign_extended_imm;
+wire [31:0] alu_operand_b;
+wire [31:0] shifted_imm;
+wire [3:0] alu_ctrl_signal;
+wire alu_zero;
+wire [31:0] alu_result;
+wire [31:0] branch_target;
+wire branch_and_zero;
+wire [31:0] mem_read_data;
 
 // Connection of PC
 PC pc_0(
     .clock(clock),
     .reset(reset),
-    .PCin(PCin_S),
-    .PCout(PCout_S)
+    .PCin(pc_next),
+    .PCout(pc_current)
 );
 
 // Connection of PCINC
 PCINC pc_adder(
-    .PCout1(PCout_S),
-    .PCoutinc(PCoutinc_S)
+    .PCin(pc_current),
+    .PCout(pc_incremented)
 );
 
 // Connection of InstMem
 InstMem instmem_0(
-    .address(PCout_S),
-    .inst(inst_S)
+    .address(pc_current),
+    .inst(instruction)
 );
 
 // Connection of MainControl
 MainControl main_control_0(
-    .Opcode(inst_S[31:26]),
-    .RegDst(RegDst_S),
-    .RegWrite(RegWrite_S),
-    .ALUSrc(ALUSrc_S),
-    .MemtoReg(MemtoReg_S),
-    .MemRead(MemRead_S),
-    .MemWrite(MemWrite_S),
-    .Branch(Branch_S),
-    .ALUOp(ALUOp_S)
+    .Opcode(instruction[31:26]),
+    .RegDst(reg_dst),
+    .RegWrite(reg_write),
+    .ALUSrc(alu_src),
+    .MemtoReg(mem_to_reg),
+    .MemRead(mem_read),
+    .MemWrite(mem_write),
+    .Branch(branch),
+    .ALUOp(alu_op)
 );
 
 // Connection of Mux1
 Mux1 mux1_0(
-    .inst20_16(inst_S[20:16]),
-    .inst15_11(inst_S[15:11]),
-    .RegDst(RegDst_S),
-    .WriteReg(WriteReg_S)
+    .inst20_16(instruction[20:16]),
+    .inst15_11(instruction[15:11]),
+    .RegDst(reg_dst),
+    .WriteReg(write_reg)
 );
 
 // Connection of RegFile
 RegFile regfile_0(
     .clock(clock),
     .reset(reset),
-    .ReadReg1(inst_S[25:21]),
-    .ReadReg2(inst_S[20:16]),
-    .RegWrite(RegWrite_S),
-    .WriteReg(WriteReg_S),
-    .WriteData(WriteData_Reg_S),
-    .ReadData1(ReadData1_S),
-    .ReadData2(ReadData2_S)
+    .ReadReg1(instruction[25:21]),
+    .ReadReg2(instruction[20:16]),
+    .RegWrite(reg_write),
+    .WriteReg(write_reg),
+    .WriteData(reg_write_data),
+    .ReadData1(reg_read_data1),
+    .ReadData2(reg_read_data2)
 );
 
 // Connection of SignExtend
 SignExtend sign_extend_0(
-    .inst15_0(inst_S[15:0]),
-    .Extend32(Extend32_S)
+    .inst15_0(instruction[15:0]),
+    .Extend32(sign_extended_imm)
 );
 
 // Connection of Mux2
 Mux2 mux2_0(
-    .ALUSrc(ALUSrc_S),
-    .ReadData2(ReadData2_S),
-    .Extend32(Extend32_S),
-    .ALU_B(ALU_B_S)
+    .ALUSrc(alu_src),
+    .ReadData2(reg_read_data2),
+    .Extend32(sign_extended_imm),
+    .ALU_B(alu_operand_b)
 );
 
 // Connection of ShiftLeft2
 ShiftLeft2 shift_left2_0(
-    .ShiftIn(Extend32_S),
-    .ShiftOut(ShiftOut_S)
+    .ShiftIn(sign_extended_imm),
+    .ShiftOut(shifted_imm)
 );
 
 // Connection of ALUControl
 ALUControl alu_control_0(
-    .ALUOp(ALUOp_S),
-    .FuncCode(inst_S[5:0]),
-    .ALUCtl(ALUCtl_S)
+    .ALUOp(alu_op),
+    .FuncCode(instruction[5:0]),
+    .ALUCtl(alu_ctrl_signal)
 );
 
 // Connection of ALU
 ALU alu_0(
-    .A(ReadData1_S),
-    .B(ALU_B_S),
-    .ALUCtl(ALUCtl_S),
-    .ALUOut(ALUOut_S),
-    .Zero(Zero_S)
+    .A(reg_read_data1),
+    .B(alu_operand_b),
+    .ALUCtl(alu_ctrl_signal),
+    .ALUOut(alu_result),
+    .Zero(alu_zero)
 );
 
 // Connection of Add_ALU
 Add_ALU add_alu_0(
-    .PCout(PCoutinc_S),
-    .ShiftOut(ShiftOut_S),
-    .Add_ALUOut(Add_ALUOut_S)
+    .PCout(pc_incremented),
+    .ShiftOut(shifted_imm),
+    .Add_ALUOut(branch_target)
 );
 
 // Connection of AndGate
 AndGate and_gate_0(
-    .Branch(Branch_S),
-    .Zero(Zero_S),
-    .AndGateOut(AndGateOut_S)
+    .Branch(branch),
+    .Zero(alu_zero),
+    .AndGateOut(branch_and_zero)
 );
 
 // Connection of Mux4
 Mux4 mux4_0(
-    .PCout(PCoutinc_S),
-    .Add_ALUOut(Add_ALUOut_S),
-    .AndGateOut(AndGateOut_S),
-    .PCin(PCin_S)
+    .PCout(pc_incremented),
+    .Add_ALUOut(branch_target),
+    .AndGateOut(branch_and_zero),
+    .PCin(pc_next)
 );
 
 // Connection of DataMemory
 DataMemory data_memory_0(
     .clock(clock),
     .reset(reset),
-    .address(ALUOut_S[6:0]),
-    .MemWrite(MemWrite_S),
-    .MemRead(MemRead_S),
-    .WriteData(ReadData2_S),
-    .ReadData(ReadData_S)
+    .address(alu_result),
+    .MemWrite(mem_write),
+    .MemRead(mem_read),
+    .WriteData(reg_read_data2),
+    .ReadData(mem_read_data)
 );
 
 // Connection of Mux3
 Mux3 mux3_0(
-    .MemtoReg(MemtoReg_S),
-    .ReadData(ReadData_S),
-    .ALUOut(ALUOut_S),
-    .WriteData_Reg(WriteData_Reg_S)
+    .MemtoReg(mem_to_reg),
+    .ReadData(mem_read_data),
+    .ALUOut(alu_result),
+    .WriteData_Reg(reg_write_data)
 );
 
 endmodule

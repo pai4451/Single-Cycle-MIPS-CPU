@@ -13,14 +13,14 @@ module MIPSCPU_TB ();
     initial 
     begin
         // Save waveform
-        $dumpfile("MIPS.vcd");       
+        $dumpfile("wave.vcd");       
         $dumpvars; 
 
         // Initialization
         initialize();
 
-        // Reset
-        resett();
+        // Apply reset
+        apply_reset();
 
         // Run the simulation for a specified number of clock periods
         #(6 * Period);
@@ -33,18 +33,16 @@ module MIPSCPU_TB ();
     task initialize;
     begin
         CLK = 1'b0;  // Initialize clock signal to 0
-        RST = 1'b1;  // Initialize reset signal to 1
+        RST = 1'b1;  // Initialize reset signal to 1 (reset not asserted)
     end
     endtask
 
-    // Task to reset the CPU
-    task resett;
+    // Task to apply reset
+    task apply_reset;
     begin
-        RST = 1'b1;    // Set reset signal to 1
-        #(Period);
-        RST = 1'b0;    // Set reset signal to 0
-        #(Period);
-        RST = 1'b1;    // Set reset signal to 1 again
+        RST = 1'b0;    // Assert reset signal (active low)
+        #(Period);     // Wait for one clock period
+        RST = 1'b1;    // Release reset signal (deassert)
     end
     endtask  
 
