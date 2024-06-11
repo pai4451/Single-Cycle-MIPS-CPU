@@ -9,45 +9,38 @@ module MIPSCPU_TB ();
     reg RST;      // Reset signal
     parameter Period = 20;  // Clock period in time units
 
-    // Initial block to run the simulation
+    // Initial block to generate the clock signal
+    initial 
+    begin
+        // Generate clock signal
+        CLK = 1'b0;  // Initialize clock signal to 0
+        forever #(Period / 2) CLK = ~CLK;  // Toggle clock signal every half period
+    end
+
+    // Initial block to initialize and apply reset
+    initial 
+    begin
+        // Initialize and apply reset
+        RST = 1'b1;  // Initialize reset signal to 1 (reset not asserted)
+        #(Period / 2);   // Wait for one clock period
+        RST = 1'b0;  // Assert reset signal (active low)
+        #(Period / 2);   // Wait for one clock period
+        RST = 1'b1;  // Release reset signal (deassert)
+    end
+
+    // Initial block to save waveform and run simulation
     initial 
     begin
         // Save waveform
         $dumpfile("wave.vcd");       
         $dumpvars; 
 
-        // Initialization
-        initialize();
-
-        // Apply reset
-        apply_reset();
-
         // Run the simulation for a specified number of clock periods
-        #(6 * Period);
+        #(8 * Period);
 
         // Stop the simulation
         $stop;
-    end    
-
-    // Task to initialize signals
-    task initialize;
-    begin
-        CLK = 1'b0;  // Initialize clock signal to 0
-        RST = 1'b1;  // Initialize reset signal to 1 (reset not asserted)
     end
-    endtask
-
-    // Task to apply reset
-    task apply_reset;
-    begin
-        RST = 1'b0;    // Assert reset signal (active low)
-        #(Period);     // Wait for one clock period
-        RST = 1'b1;    // Release reset signal (deassert)
-    end
-    endtask  
-
-    // Always block to generate the clock signal
-    always #(Period / 2) CLK = ~CLK;
 
     // Instantiate the MipsCPU module (Device Under Test)
     MipsCPU DUT (
