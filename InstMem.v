@@ -13,21 +13,6 @@ module InstMem(
 );
     
 reg [31:0] Mem [0:127];           // Memory array to hold instructions
-integer i;                        // Declare integer for loop index
-// Initial block to load the memory with instructions
-initial 
-begin
-    Mem[0] = 32'h00221820;   // add: R3, R1, R2  
-    Mem[1] = 32'hAC010000;   // sw: R1, 0(R0)
-    Mem[2] = 32'h8C240000;   // lw R4, 0(R1)
-    Mem[3] = 32'h10210001;   // beq R1, R1, +8 (Branch taken)
-    Mem[4] = 32'h00001820;   // add R3, R0, R0 (Skipped because of branch taken)
-    Mem[5] = 32'h00411822;   // sub R3, R2, R1  
-    // Initialize remaining memory with 0
-    for (i = 6; i < 128; i = i + 1) begin
-        Mem[i] = 32'b0;
-    end
-end
 
 // Always block triggered by any change in the address
 always @(*)

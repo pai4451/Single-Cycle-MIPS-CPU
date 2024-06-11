@@ -22,6 +22,7 @@ module DataMemory (
 );
 
 reg [31:0] Mem [0:127];          // Memory array with 128 entries, each 32 bits
+integer i;                        // Declare integer for loop index
 
 // Assign the output data from the memory array
 assign ReadData = Mem[address[8:2]];
@@ -32,10 +33,9 @@ begin
     if (!reset)
     begin
         // Initialize memory on reset (active low)
-        Mem[0] <= 5;
-        Mem[1] <= 6;
-        Mem[2] <= 7;
-        // Initialize other memory locations as needed
+        for (i = 0; i < 128; i = i + 1) begin
+            Mem[i] <= 32'b0;
+        end
     end
     else if (MemWrite && !MemRead)
     begin

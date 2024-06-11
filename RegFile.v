@@ -27,6 +27,7 @@ module RegFile(
 );
 
 reg [31:0] reg_mem [0:31];        // Memory array to hold register values
+integer i;                        // Declare integer for loop index
 
 // Assign the output data from the register file
 assign ReadData1 = reg_mem[ReadReg1];  // Read data from the first register
@@ -38,9 +39,9 @@ begin
     if (!reset)
     begin
         // Initialize registers on reset
-        reg_mem[0] <= 0;       // Register $0
-        reg_mem[1] <= 8;       // Register R1
-        reg_mem[2] <= 20;      // Register R2
+        for (i = 0; i < 32; i = i + 1) begin
+            reg_mem[i] <= 32'b0;
+        end
     end
     else if (RegWrite)
     begin
