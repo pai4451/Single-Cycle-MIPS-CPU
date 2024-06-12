@@ -38,7 +38,7 @@ module MIPSCPU_TB ();
     begin
         // Save waveform
         $dumpfile("wave.vcd");       
-        $dumpvars; 
+        $dumpvars(0, MIPSCPU_TB);  // Dump all variables in the testbench scope
 
         // Run the simulation for a specified number of clock periods
         #(8 * Period);

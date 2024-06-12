@@ -23,6 +23,7 @@ module MainControl (
     output reg MemRead,           // Memory read enable signal
     output reg MemWrite,          // Memory write enable signal
     output reg Branch,            // Branch control signal
+    output reg Jump,              // Jump control signal
     output reg [1:0] ALUOp        // ALU operation control signal
 );
 
@@ -37,6 +38,7 @@ begin
     MemRead = 0;
     MemWrite = 0;
     Branch = 0;
+    Jump = 0;
     ALUOp = 2'b00;
 
     // Generate control signals based on the Opcode
@@ -50,6 +52,7 @@ begin
             MemRead = 0;
             MemWrite = 0;
             Branch = 0;
+            Jump = 0;
             ALUOp = 2'b10;
         end
         6'b100011: begin
@@ -61,6 +64,7 @@ begin
             MemRead = 1;
             MemWrite = 0;
             Branch = 0;
+            Jump = 0;
             ALUOp = 2'b00;
         end
         6'b101011: begin
@@ -72,6 +76,7 @@ begin
             MemRead = 0;
             MemWrite = 1;
             Branch = 0;
+            Jump = 0;
             ALUOp = 2'b00;
         end
         6'b000100: begin
@@ -83,7 +88,20 @@ begin
             MemRead = 0;
             MemWrite = 0;
             Branch = 1;
+            Jump = 0;
             ALUOp = 2'b01;
+        end
+        6'b000010: begin
+            // j (jump)
+            RegDst = 0;
+            ALUSrc = 0;
+            MemtoReg = 0;
+            RegWrite = 0;
+            MemRead = 0;
+            MemWrite = 0;
+            Branch = 0;
+            Jump = 1;
+            ALUOp = 2'b00;
         end
         default: begin
             // Default case for unsupported instructions
@@ -94,6 +112,7 @@ begin
             MemRead = 0;
             MemWrite = 0;
             Branch = 0;
+            Jump = 0;
             ALUOp = 2'b00;
         end
     endcase

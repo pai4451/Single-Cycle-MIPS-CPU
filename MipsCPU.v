@@ -15,7 +15,7 @@ module MipsCPU(
 wire [31:0] pc_next, pc_current;
 wire [31:0] pc_incremented;
 wire [31:0] instruction;
-wire reg_dst, reg_write, alu_src, mem_to_reg, mem_read, mem_write, branch;
+wire reg_dst, reg_write, alu_src, mem_to_reg, mem_read, mem_write, branch, jump;
 wire [1:0] alu_op;
 wire [4:0] write_reg;
 wire [31:0] reg_read_data1, reg_read_data2;
@@ -29,6 +29,8 @@ wire [31:0] alu_result;
 wire [31:0] branch_target;
 wire branch_and_zero;
 wire [31:0] mem_read_data;
+wire [31:0] jump_target;
+wire [31:0] mux4_out;
 
 // Connection of PC
 PC pc_0(
@@ -60,6 +62,7 @@ MainControl main_control_0(
     .MemRead(mem_read),
     .MemWrite(mem_write),
     .Branch(branch),
+    .Jump(jump),
     .ALUOp(alu_op)
 );
 
@@ -139,7 +142,18 @@ Mux4 mux4_0(
     .PCout(pc_incremented),
     .Add_ALUOut(branch_target),
     .AndGateOut(branch_and_zero),
-    .PCin(pc_next)
+    .PCin(mux4_out)
+);
+
+// Calculate jump target address
+assign jump_target = {pc_incremented[31:28], instruction[25:0], 2'b00};
+
+// Connection of Mux5
+Mux5 mux5_0(
+    .PCin(mux4_out),
+    .JumpTarget(jump_target),
+    .Jump(jump),
+    .PCout(pc_next)
 );
 
 // Connection of DataMemory
