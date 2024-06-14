@@ -5,7 +5,6 @@
 // Inputs:
 //    - clock: Clock signal
 //    - RegWrite: Register write enable signal
-//    - reset: Reset signal (active low)
 //    - ReadReg1: Address of the first register to read (5-bit)
 //    - ReadReg2: Address of the second register to read (5-bit)
 //    - WriteReg: Address of the register to write (5-bit)
@@ -17,7 +16,6 @@
 module RegFile(
     input wire clock,             // Clock signal
     input wire RegWrite,          // Register write enable signal
-    input wire reset,             // Reset signal (active low)
     input wire [4:0] ReadReg1,    // Address of the first register to read
     input wire [4:0] ReadReg2,    // Address of the second register to read
     input wire [4:0] WriteReg,    // Address of the register to write
@@ -27,7 +25,6 @@ module RegFile(
 );
 
 reg [31:0] reg_mem [0:31];        // Memory array to hold register values
-integer i;                        // Declare integer for loop index
 
 // Assign the output data from the register file
 assign ReadData1 = reg_mem[ReadReg1];  // Read data from the first register
@@ -36,14 +33,7 @@ assign ReadData2 = reg_mem[ReadReg2];  // Read data from the second register
 // Always block triggered on the rising edge of the clock
 always @(posedge clock) 
 begin
-    if (!reset)
-    begin
-        // Initialize registers on reset
-        for (i = 0; i < 32; i = i + 1) begin
-            reg_mem[i] <= 32'b0;
-        end
-    end
-    else if (RegWrite)
+    if (RegWrite)
     begin
         // Write data to the specified register if RegWrite is enabled
         reg_mem[WriteReg] <= WriteData;

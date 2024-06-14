@@ -77,7 +77,6 @@ Mux1 mux1_0(
 // Connection of RegFile
 RegFile regfile_0(
     .clock(clock),
-    .reset(reset),
     .ReadReg1(instruction[25:21]),
     .ReadReg2(instruction[20:16]),
     .RegWrite(reg_write),
@@ -159,7 +158,6 @@ Mux5 mux5_0(
 // Connection of DataMemory
 DataMemory data_memory_0(
     .clock(clock),
-    .reset(reset),
     .address(alu_result),
     .MemWrite(mem_write),
     .MemRead(mem_read),

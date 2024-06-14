@@ -3,7 +3,6 @@
 //              reading and writing of 32-bit data at specified addresses.
 // Inputs:
 //    - clock: Clock signal
-//    - reset: Reset signal (active low, synchronous)
 //    - address: Address for the memory operation (32-bit)
 //    - MemWrite: Memory write enable signal
 //    - MemRead: Memory read enable signal
@@ -13,7 +12,6 @@
 
 module DataMemory (
     input wire clock,            // Clock signal
-    input wire reset,            // Reset signal (active low, synchronous)
     input wire [31:0] address,   // Address for the memory operation (32-bit)
     input wire MemWrite,         // Memory write enable signal
     input wire MemRead,          // Memory read enable signal
@@ -22,7 +20,6 @@ module DataMemory (
 );
 
 reg [31:0] Mem [0:127];          // Memory array with 128 entries, each 32 bits
-integer i;                        // Declare integer for loop index
 
 // Assign the output data from the memory array
 assign ReadData = Mem[address[8:2]];
@@ -30,14 +27,7 @@ assign ReadData = Mem[address[8:2]];
 // Always block triggered on the rising edge of the clock
 always @ (posedge clock)
 begin
-    if (!reset)
-    begin
-        // Initialize memory on reset (active low)
-        for (i = 0; i < 128; i = i + 1) begin
-            Mem[i] <= 32'b0;
-        end
-    end
-    else if (MemWrite && !MemRead)
+    if (MemWrite && !MemRead)
     begin
         // Write data to memory if MemWrite is enabled and MemRead is disabled
         Mem[address[8:2]] <= WriteData;
