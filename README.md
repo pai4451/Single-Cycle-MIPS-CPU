@@ -1,3 +1,6 @@
+# Single Cycle MIPS CPU
+
+
 ## Instructions
 
 ### `add`
@@ -186,3 +189,21 @@ The `add` instruction in MIPS adds the values of two registers and stores the re
 
 
 ![MIPS ADD Instruction Example](images/add2.png)
+
+## Reference
+
+1. [Moustafa55589
+/
+MIPS-32-Bit-Single-Cycle-and-Pipelined-RTL-Design-using-verilog](https://github.com/Moustafa55589/MIPS-32-Bit-Single-Cycle-and-Pipelined-RTL-Design-using-verilog)
+2. [martinKindall
+/
+mips_cpu](https://github.com/martinKindall/mips_cpu)
+3. [DiabloBlood
+/
+single-cycle-MIPS-CPU](https://github.com/DiabloBlood/single-cycle-MIPS-CPU)
+4. [ybch14
+/
+Single-Cycle-CPU-with-Verilog](https://github.com/ybch14/Single-Cycle-CPU-with-Verilog)
+5. [walsvid
+/
+Single_Cycle_CPU](https://github.com/walsvid/Single_Cycle_CPU)
