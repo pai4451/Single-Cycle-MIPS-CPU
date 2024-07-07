@@ -1,5 +1,37 @@
 # Single Cycle MIPS CPU
 
+This project is a detailed implementation of a Single Cycle MIPS CPU in Verilog. It supports a subset of the MIPS instruction set, specifically designed to demonstrate the fundamental concepts of microprocessor architecture and instruction execution in a single cycle model.
+
+## Supported Instructions
+
+The CPU supports the following instructions:
+
+- `add`: Adds two registers and stores the result in a destination register.
+- `sub`: Subtracts the second register from the first and stores the result in a destination register.
+- `lw`: Loads a word from memory into a register.
+- `sw`: Stores a word from a register into memory.
+- `beq`: Branches to an instruction if two registers are equal.
+- `j`: Jumps to a specified instruction address.
+
+## Data Path
+
+The data path of the CPU is illustrated in the following diagram:
+
+![CPU Data Path](images/arch.png)
+
+## Instruction Analysis
+
+```txt
+003E1820    add R3, R1, R30
+AC810004    sw R1, 4(R4)
+8C240008    lw R4, 8(R1)
+10210001    beq R1, R1, +1  // Branch taken
+000FB820    add R23, R0, R15 // skipped due to branch taken
+00E17822    sub R15, R7, R1
+08000004    j +4 // jumps back to 000FB820
+```
+
+The above instructions are stored in `instructions_2.txt`.
 
 ## Instructions
 
