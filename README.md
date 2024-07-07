@@ -33,6 +33,35 @@ AC810004    sw R1, 4(R4)
 
 The above instructions are stored in `instructions_2.txt`.
 
+Note: The jump instruction `08000004    j +4` requires a closer look to explain the correct jump address calculation. Here’s a detailed breakdown:
+
+In MIPS assembly, the `j` instruction format is:
+```
+j target
+```
+Where `target` is a 26-bit address.
+
+The jump address calculation is done as follows:
+1. Take the 26-bit target address.
+2. Shift it left by 2 bits to get the byte address (since MIPS addresses are word-aligned).
+3. Combine it with the upper 4 bits of the current PC + 4 to form the final 32-bit address.
+
+Given the instruction `08000004`, let’s decode it:
+- `08000004` in binary is `0000 1000 0000 0000 0000 0000 0000 0100`.
+- The target address is the lower 26 bits: `0000 0000 0000 0000 0000 0000 0001 00`.
+
+Shifting this left by 2 bits gives us `0000 0000 0000 0000 0000 0001 0000 00`.
+
+The upper 4 bits of the PC + 4 (which is 0x0000001C for this instruction):
+- The PC at the time of executing `08000004` is `0x00000018`.
+- `PC + 4` is `0x0000001C`.
+- The upper 4 bits of `0x0000001C` are `0000`.
+
+Combining these gives the final address:
+- `0000` (upper 4 bits of PC + 4) `0000 0000 0000 0000 0000 0001 0000 00` (shifted target address) = `0x00000010`.
+
+Therefore, `08000004` jumps to the address `0x00000010`, not `0x00000018`.
+
 ## Instructions
 
 ### `add`
